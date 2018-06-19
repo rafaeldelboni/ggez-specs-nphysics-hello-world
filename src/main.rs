@@ -124,7 +124,7 @@ fn main() {
     let c = conf::Conf::new();
     println!("Starting with default config: {:#?}", c);
 
-    let ctx = &mut Context::load_from_conf("ggez-specs", "ggez", c).unwrap();
+    let ctx = &mut Context::load_from_conf("ggez-specs-hello-world", "ggez", c).unwrap();
 
     match MainState::new(ctx) {
         Ok(ref mut game) => {
