@@ -9,7 +9,7 @@ use ggez::event;
 use ggez::graphics;
 use ggez::{Context, GameResult};
 
-use specs::{World, RunNow};
+use specs::{Builder, World, RunNow};
 
 use systems::{Systems, ControlSystem, RenderingSystem, MoveSystem};
 use components::{Controlable, Text, Velocity};
