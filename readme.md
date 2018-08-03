@@ -1,6 +1,6 @@
-# GGEZ Specs Hello World!
+# GGEZ Specs NPhysics Hello World!
 [![Status][badge-status]][badge-status]
-#### A Hello World Project to test GGEZ, Specs and Rust.
+#### A Hello World Project to test GGEZ, Specs, NPhysics and Rust.
 
 ### Controls
 
@@ -16,7 +16,7 @@ Navigate into your workspace directory.
 
 Run:
 ```bash
-git clone https://github.com/rafaeldelboni/ggez-specs-hello-world.git
+git clone https://github.com/rafaeldelboni/ggez-specs-nphysics-hello-world.git
 ```
 
 ## 2. Install Rust and SDL2 libraries:
@@ -48,4 +48,6 @@ Engine: https://github.com/ggez/ggez
 
 ECS: https://github.com/slide-rs/specs
 
-[badge-status]: https://img.shields.io/badge/status-done-green.svg
+Physics: http://nphysics.org
+
+[badge-status]: https://img.shields.io/badge/status-work%20in%20progress-lightgrey.svg
