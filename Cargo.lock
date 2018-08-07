@@ -520,11 +520,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "ggez-specs-hello-world"
+name = "ggez-specs-nphysics-hello-world"
 version = "0.1.0"
 dependencies = [
  "ggez 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "hibitset 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ncollide2d 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "nphysics2d 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",

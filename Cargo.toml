@@ -8,4 +8,5 @@ ggez = { version = "0.4", features = ["cargo-resource-root"] }
 specs = "0.12"
 nphysics2d = "0.9"
 ncollide2d = "0.17.1"
+nalgebra = "0.16.0"
 hibitset = "0.5.1"

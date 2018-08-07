@@ -1,9 +1,11 @@
 extern crate ggez;
 extern crate specs;
+extern crate hibitset;
 extern crate nphysics2d;
 extern crate ncollide2d;
-extern crate hibitset;
+extern crate nalgebra;
 
+mod entities;
 mod systems;
 mod components;
 mod resources;
@@ -14,7 +16,7 @@ use ggez::event;
 use ggez::graphics;
 use ggez::{Context, GameResult};
 use nphysics2d::math::Vector;
-use specs::{Builder, Dispatcher, DispatcherBuilder, World, RunNow};
+use specs::{Dispatcher, DispatcherBuilder, World, RunNow};
 
 use retained_storage::Retained;
 use systems::{ControlSystem, RenderingSystem, MoveSystem};
@@ -50,32 +52,9 @@ impl<'a, 'b> MainState<'a, 'b> {
 
         let font = graphics::Font::new(ctx, "/DejaVuSerif.ttf", 48)?;
 
-        world
-            .create_entity()
-            .with(Text {
-                value: graphics::Text::new(ctx, "Static text!", &font)?,
-                position: graphics::Point2::new(10.0, 10.0)})
-            .build();
-
-        world
-            .create_entity()
-            .with(Text {
-                value: graphics::Text::new(
-                           ctx,
-                           "I'm a moving alone text!",
-                           &font)?,
-                position: graphics::Point2::new(20.0, 200.0)})
-            .with(Velocity { x: 5., y: 5. })
-            .build();
-
-        world
-            .create_entity()
-            .with(Text {
-                value: graphics::Text::new(ctx, "Move-me text!", &font)?,
-                position: graphics::Point2::new(20.0, 400.0)})
-            .with(Velocity { x: 0., y: 0. })
-            .with(Controlable)
-            .build();
+        entities::create_static(ctx, &mut world, &font);
+        entities::create_moving(ctx, &mut world, &font);
+        entities::create_controled(ctx, &mut world, &font);
 
         Ok(MainState {
             frames: 0,
