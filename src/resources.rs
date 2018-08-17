@@ -5,11 +5,12 @@ use specs::{Entity};
 use nphysics2d::world::World;
 use nphysics2d::object::{BodyHandle};
 
+#[derive(Debug, Default)]
 pub struct UpdateTime(pub f32);
 
 pub type PhysicWorld = World<f32>;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BodiesMap(HashMap<BodyHandle, Entity>);
 
 impl BodiesMap {

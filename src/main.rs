@@ -19,7 +19,7 @@ use nphysics2d::math::Vector;
 use specs::{Dispatcher, DispatcherBuilder, World, RunNow};
 
 use retained_storage::Retained;
-use systems::{ControlSystem, RenderingSystem, MoveSystem};
+use systems::{ControlSystem, RenderingSystem, MoveSystem, PhysicSystem};
 use components::{Controlable, Text, Velocity, CustomRigidBody, Contactor};
 use resources::{BodiesMap, PhysicWorld, UpdateTime};
 
@@ -47,6 +47,7 @@ impl<'a, 'b> MainState<'a, 'b> {
         world.add_resource(UpdateTime(0.0));
 
         let dispatcher: Dispatcher<'a, 'b> = DispatcherBuilder::new()
+            .with(PhysicSystem, "physic_system", &[])
             .with(MoveSystem, "move_system", &[])
             .build();
 
