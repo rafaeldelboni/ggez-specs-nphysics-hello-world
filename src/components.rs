@@ -52,7 +52,7 @@ impl CustomRigidBody {
         bodies_handle: &mut WriteStorage<'a, CustomRigidBody>,
         physic_world: &mut PhysicWorld,
         bodies_map: &mut BodiesMap,
-        ) -> Self {
+    ) -> Self {
         let body_handle =
             physic_world.add_rigid_body(position, local_inertia, local_center_of_mass);
         {
@@ -77,7 +77,7 @@ impl CustomRigidBody {
     pub fn get<'a>(
         &'a self,
         physic_world: &'a PhysicWorld,
-        ) -> &'a RigidBody<f32> {
+    ) -> &'a RigidBody<f32> {
         physic_world
             .rigid_body(self.0)
             .expect("Rigid body in specs does not exist in physic world")
@@ -87,7 +87,7 @@ impl CustomRigidBody {
     pub fn get_mut<'a>(
         &self,
         physic_world: &'a mut PhysicWorld,
-        ) -> &'a mut RigidBody<f32> {
+    ) -> &'a mut RigidBody<f32> {
         physic_world
             .rigid_body_mut(self.0)
             .expect("Rigid body in specs does not exist in physic world")

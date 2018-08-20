@@ -1,11 +1,10 @@
 use ggez::event;
 use ggez::graphics;
-use ggez::graphics::{Vector2};
 use ggez::{Context};
 
 use ncollide2d::events::{ContactEvent};
-use nphysics2d::math::{Velocity as MathVelocity};
-
+use nphysics2d::algebra::Velocity2;
+use nalgebra::{Vector2, zero};
 use specs::{System, WriteStorage, ReadStorage, Read, Write, Join};
 
 use resources::{UpdateTime, PhysicWorld, BodiesMap};
@@ -24,16 +23,12 @@ impl<'a> System<'a> for MoveSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (vel, mut text, mut body, mut phy_world) = data;
         (&vel, &mut text, &mut body).join().for_each(|(vel, text, body)| {
-            text.position.x += vel.x * 0.05;
-            text.position.y += vel.y * 0.05;
             let v = Vector2::new(vel.x * 0.05, vel.y * 0.05);
-            if let Some(v) = v.try_normalize(0.0001) {
+            if v != zero() {
                 let body = body.get_mut(&mut phy_world);
-                let current_angle = body.position().rotation.angle();
-                let next_angle = -v[1].atan2(v[0]);
-                body.apply_displacement(
-                    &MathVelocity::angular(next_angle - current_angle));
-                println!("body pos: {:#?}", body.position());
+                body.apply_displacement(&Velocity2::new(v, 0.0));
+                text.position.x = body.position().translation.vector.x;
+                text.position.y = body.position().translation.vector.y;
             }
         });
     }
