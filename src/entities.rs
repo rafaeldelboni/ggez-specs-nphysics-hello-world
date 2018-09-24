@@ -21,8 +21,8 @@ pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font) {
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        499.0,
-        49.0,
+        24.0,
+        24.0,
     )));
     let inertia = shape.inertia(1.0);
     let center_of_mass = shape.center_of_mass();
@@ -32,7 +32,7 @@ pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font) {
         Isometry2::new(Vector2::new(10.0, 10.0), 0.0),
         inertia,
         center_of_mass,
-        BodyStatus::Dynamic,
+        BodyStatus::Static,
         &mut world.write_storage(),
         &mut physic_world,
         &mut world.write_resource(),
@@ -58,14 +58,14 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
                ).unwrap(),
             position: graphics::Point2::new(10.0, 80.0)
         })
-        .with(Velocity { x: 5., y: 5. })
+        .with(Velocity { x: 50., y: 50. })
         .build();
 
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        499.0,
-        49.0,
+        24.0,
+        24.0,
     )));
     let inertia = shape.inertia(1.0);
     let center_of_mass = shape.center_of_mass();
@@ -103,8 +103,8 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        499.0,
-        49.0,
+        24.0,
+        24.0,
     )));
     let inertia = shape.inertia(1.0);
     let center_of_mass = shape.center_of_mass();

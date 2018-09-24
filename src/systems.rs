@@ -2,18 +2,17 @@ use ggez::event;
 use ggez::graphics;
 use ggez::{Context};
 
-use ncollide2d::events::{ContactEvent};
-use nphysics2d::algebra::Velocity2;
-use nalgebra::{Vector2, zero};
+use nalgebra::{Vector2};
 use specs::{System, WriteStorage, ReadStorage, Read, Write, Join};
 
-use resources::{UpdateTime, PhysicWorld, BodiesMap};
-use components::{Text, Velocity, Controlable, Contactor, CustomRigidBody as Body};
+use resources::{UpdateTime, PhysicWorld};
+use components::{Text, Velocity, Controlable, CustomRigidBody as Body};
 
 pub struct MoveSystem;
 
 impl<'a> System<'a> for MoveSystem {
     type SystemData = (
+        Read<'a, UpdateTime>,
         ReadStorage<'a, Velocity>,
         WriteStorage<'a, Text>,
         WriteStorage<'a, Body>,
@@ -21,15 +20,13 @@ impl<'a> System<'a> for MoveSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (vel, mut text, mut body, mut phy_world) = data;
+        let (delta, vel, mut text, mut body, mut phy_world) = data;
         (&vel, &mut text, &mut body).join().for_each(|(vel, text, body)| {
-            let v = Vector2::new(vel.x * 0.05, vel.y * 0.05);
-            if v != zero() {
-                let body = body.get_mut(&mut phy_world);
-                body.apply_displacement(&Velocity2::new(v, 0.0));
-                text.position.x = body.position().translation.vector.x;
-                text.position.y = body.position().translation.vector.y;
-            }
+            let v = Vector2::new(vel.x, vel.y) * delta.0;
+            let b = body.get_mut(&mut phy_world);
+            b.set_linear_velocity(v);
+            text.position.x = b.position().translation.vector.x;
+            text.position.y = b.position().translation.vector.y;
         });
     }
 }
@@ -45,11 +42,24 @@ impl<'c> RenderingSystem<'c> {
 }
 
 impl<'a, 'c> System<'a> for RenderingSystem<'c> {
-    type SystemData = ReadStorage<'a, Text>;
+    type SystemData = (
+        ReadStorage<'a, Body>,
+        Read<'a, PhysicWorld>,
+    );
 
-    fn run(&mut self, texts: Self::SystemData) {
-        &texts.join().for_each(|text| {
-            graphics::draw(self.ctx, &text.value, text.position, 0.0).unwrap();
+    fn run(&mut self, (bodies, world): Self::SystemData) {
+        (&bodies).join().for_each(|body| {
+            let rbody = body.get(&world);
+            graphics::rectangle(
+                self.ctx,
+                graphics::DrawMode::Line(1.0),
+                graphics::Rect::new(
+                    rbody.position().translation.vector.x,
+                    rbody.position().translation.vector.y,
+                    50.0,
+                    50.0
+                )
+            ).unwrap();
         });
     }
 }
@@ -77,10 +87,10 @@ impl<'a> System<'a> for ControlSystem {
             match self.down_event {
                 true =>
                     match self.keycode {
-                        event::Keycode::Up => vel.y = -10.0,
-                        event::Keycode::Down => vel.y = 10.0,
-                        event::Keycode::Left => vel.x = -10.0,
-                        event::Keycode::Right => vel.x = 10.0,
+                        event::Keycode::Up => vel.y = -500.0,
+                        event::Keycode::Down => vel.y = 500.0,
+                        event::Keycode::Left => vel.x = -500.0,
+                        event::Keycode::Right => vel.x = 500.0,
                         _ => {}
                     }
                 false =>
@@ -100,67 +110,18 @@ pub struct PhysicSystem;
 
 impl<'a> System<'a> for PhysicSystem {
     type SystemData = (
-        WriteStorage<'a, Contactor>,
         Read<'a, UpdateTime>,
-        Read<'a, BodiesMap>,
         Write<'a, PhysicWorld>,
     );
 
     fn run(
         &mut self,
         (
-            mut contactors,
             update_time,
-            bodies_map,
             mut physic_world,
         ): Self::SystemData,
     ) {
-        physic_world.set_timestep(update_time.0);
+        physic_world.set_timestep(1.0 - update_time.0);
         physic_world.step();
-        for contact in physic_world.contact_events() {
-            let collision_world = physic_world.collision_world();
-            match contact {
-                &ContactEvent::Started(coh1, coh2) => {
-                    let bh1 = collision_world
-                        .collision_object(coh1)
-                        .unwrap()
-                        .data()
-                        .body();
-                    let bh2 = collision_world
-                        .collision_object(coh2)
-                        .unwrap()
-                        .data()
-                        .body();
-                    let e1 = *bodies_map.get(&bh1).unwrap();
-                    let e2 = *bodies_map.get(&bh2).unwrap();
-                    if let Some(contactor) = contactors.get_mut(e1) {
-                        contactor.push(e2);
-                    }
-                    if let Some(contactor) = contactors.get_mut(e2) {
-                        contactor.push(e1);
-                    }
-                }
-                &ContactEvent::Stopped(coh1, coh2) => {
-                    let bh1 = collision_world
-                        .collision_object(coh1)
-                        .unwrap()
-                        .data()
-                        .body();
-                    let bh2 = collision_world
-                        .collision_object(coh2)
-                        .unwrap()
-                        .data()
-                        .body();
-                    let e1 = *bodies_map.get(&bh1).unwrap();
-                    let e2 = *bodies_map.get(&bh2).unwrap();
-                    if let Some(contactor) = contactors.get_mut(e1) {
-                        contactor.retain(|&e| e != e2);
-                    }
-                    if let Some(contactor) = contactors.get_mut(e2) {
-                        contactor.retain(|&e| e != e1);
-                    }
-                }
-            }
-        }
     }
 }

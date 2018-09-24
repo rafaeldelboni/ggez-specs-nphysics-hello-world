@@ -66,15 +66,13 @@ impl<'a, 'b> MainState<'a, 'b> {
 }
 
 impl<'a, 'b> event::EventHandler for MainState<'a, 'b> {
-    fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
-        let last_update_instant = std::time::Instant::now();
-        let delta_time = last_update_instant.elapsed();
+    fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
+        let dt = ggez::timer::get_delta(ctx);
+        let seconds = (
+            dt.as_secs() as f32 + (dt.subsec_nanos() as f32 / 1_000_000_000.0)
+        ).min(1.0 / 20.0);
 
-        self.world.write_resource::<UpdateTime>().0 = delta_time
-            .as_secs()
-            .saturating_mul(1_000_000_000)
-            .saturating_add(delta_time.subsec_nanos() as u64)
-            as f32 / 1_000_000_000.0;
+        self.world.write_resource::<UpdateTime>().0 = seconds;
 
         self.dispatcher.dispatch(&mut self.world.res);
         self.world.maintain();
