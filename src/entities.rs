@@ -10,26 +10,26 @@ use nalgebra::{Isometry2, Vector2};
 use resources::{PhysicWorld};
 use components::{Controlable, Text, Velocity, CustomRigidBody};
 
-pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font) {
+pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font, x: f32, y: f32) {
     let entity = world.create_entity()
         .with(Text {
             value: graphics::Text::new(ctx, "Static text!", &font).unwrap(),
-            position: graphics::Point2::new(10.0, 10.0)})
+            position: graphics::Point2::new(x, y)})
         .with(Velocity { x: 0., y: 0. })
         .build();
 
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        24.0,
-        24.0,
+        24.9,
+        24.9,
     )));
     let inertia = shape.inertia(1.0);
     let center_of_mass = shape.center_of_mass();
 
     let body_handle = CustomRigidBody::safe_insert(
         entity,
-        Isometry2::new(Vector2::new(10.0, 10.0), 0.0),
+        Isometry2::new(Vector2::new(x, y), 0.0),
         inertia,
         center_of_mass,
         BodyStatus::Static,
@@ -39,7 +39,7 @@ pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font) {
     );
 
     physic_world.add_collider(
-        1.0,
+        0.1,
         shape,
         body_handle.handle(),
         Isometry2::identity(),
@@ -64,8 +64,8 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        24.0,
-        24.0,
+        24.9,
+        24.9,
     )));
     let inertia = shape.inertia(1.0);
     let center_of_mass = shape.center_of_mass();
@@ -82,7 +82,7 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
     );
 
     physic_world.add_collider(
-        1.0,
+        0.1,
         shape,
         body_handle.handle(),
         Isometry2::identity(),
@@ -103,8 +103,8 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        24.0,
-        24.0,
+        24.9,
+        24.9,
     )));
     let inertia = shape.inertia(1.0);
     let center_of_mass = shape.center_of_mass();
@@ -121,7 +121,7 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
     );
 
     physic_world.add_collider(
-        1.0,
+        0.1,
         shape,
         body_handle.handle(),
         Isometry2::identity(),
