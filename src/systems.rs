@@ -1,5 +1,6 @@
 use ggez::event;
 use ggez::graphics;
+use ggez::graphics::Drawable;
 use ggez::{Context};
 
 use nalgebra::{Vector2};
@@ -50,16 +51,28 @@ impl<'a, 'c> System<'a> for RenderingSystem<'c> {
     fn run(&mut self, (bodies, world): Self::SystemData) {
         (&bodies).join().for_each(|body| {
             let rbody = body.get(&world);
-            graphics::rectangle(
+
+            let rect_x = rbody.position().translation.vector.x;
+            let rect_y = rbody.position().translation.vector.y;
+            let rect_w = 50.0;
+            let rect_h = 50.0;
+
+            let x1 = rect_x;
+            let x2 = rect_x + rect_w;
+            let y1 = rect_y;
+            let y2 = rect_y + rect_h;
+            let pts = [
+                graphics::Point2::new(x1, y1),
+                graphics::Point2::new(x2, y1),
+                graphics::Point2::new(x2, y2),
+                graphics::Point2::new(x1, y2),
+            ];
+            let m = graphics::Mesh::new_polygon(
                 self.ctx,
                 graphics::DrawMode::Line(1.0),
-                graphics::Rect::new(
-                    rbody.position().translation.vector.x,
-                    rbody.position().translation.vector.y,
-                    50.0,
-                    50.0
-                )
+                &pts
             ).unwrap();
+            m.draw(self.ctx, graphics::Point2::origin(), 0.0).unwrap();
         });
     }
 }
