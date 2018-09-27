@@ -53,8 +53,8 @@ impl<'a, 'b> MainState<'a, 'b> {
 
         let font = graphics::Font::new(ctx, "/DejaVuSerif.ttf", 48)?;
 
-        entities::create_static(ctx, &mut world, &font, 10.0, 10.0);
-        entities::create_static(ctx, &mut world, &font, 60.0, 10.0);
+        entities::create_static(ctx, &mut world, &font, 1.0, 1.0);
+        entities::create_static(ctx, &mut world, &font, 6.0, 1.0);
         entities::create_moving(ctx, &mut world, &font);
         entities::create_controled(ctx, &mut world, &font);
 

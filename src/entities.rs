@@ -21,8 +21,8 @@ pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font, x: f32, 
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        24.9,
-        24.9,
+        2.49,
+        2.49,
     )));
     let mut inertia = shape.inertia(1.0);
     inertia.angular = 0.0;
@@ -40,7 +40,7 @@ pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font, x: f32, 
     );
 
     physic_world.add_collider(
-        0.1,
+        0.01,
         shape,
         body_handle.handle(),
         Isometry2::identity(),
@@ -57,7 +57,7 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
                    "I'm a moving alone text!",
                    &font
                ).unwrap(),
-            position: graphics::Point2::new(10.0, 80.0)
+            position: graphics::Point2::new(1.0, 8.0)
         })
         .with(Velocity { x: 50., y: 50. })
         .build();
@@ -65,8 +65,8 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        24.9,
-        24.9,
+        2.49,
+        2.49,
     )));
     let mut inertia = shape.inertia(1.0);
     inertia.angular = 0.0;
@@ -74,7 +74,7 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
 
     let body_handle = CustomRigidBody::safe_insert(
         entity,
-        Isometry2::new(Vector2::new(10.0, 80.0), 0.0),
+        Isometry2::new(Vector2::new(1.0, 8.0), 0.0),
         inertia,
         center_of_mass,
         BodyStatus::Dynamic,
@@ -84,7 +84,7 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
     );
 
     physic_world.add_collider(
-        0.1,
+        0.01,
         shape,
         body_handle.handle(),
         Isometry2::identity(),
@@ -97,7 +97,7 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
         .create_entity()
         .with(Text {
             value: graphics::Text::new(ctx, "Move-me text!", &font).unwrap(),
-            position: graphics::Point2::new(20.0, 400.0)})
+            position: graphics::Point2::new(2.0, 40.0)})
         .with(Velocity { x: 0., y: 0. })
         .with(Controlable)
         .build();
@@ -105,8 +105,8 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
     let mut physic_world = world.write_resource::<PhysicWorld>();
 
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
-        24.9,
-        24.9,
+        2.49,
+        2.49,
     )));
     let mut inertia = shape.inertia(1.0);
     inertia.angular = 0.0;
@@ -114,7 +114,7 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
 
     let body_handle = CustomRigidBody::safe_insert(
         entity,
-        Isometry2::new(Vector2::new(20.0, 400.0), 0.0),
+        Isometry2::new(Vector2::new(2.0, 40.0), 0.0),
         inertia,
         center_of_mass,
         BodyStatus::Dynamic,
@@ -124,7 +124,7 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
     );
 
     physic_world.add_collider(
-        0.1,
+        0.01,
         shape,
         body_handle.handle(),
         Isometry2::identity(),

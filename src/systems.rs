@@ -1,6 +1,6 @@
 use ggez::event;
 use ggez::graphics;
-use ggez::graphics::Drawable;
+use ggez::graphics::{DrawParam, Drawable};
 use ggez::{Context};
 
 use nalgebra::{Vector2};
@@ -54,25 +54,33 @@ impl<'a, 'c> System<'a> for RenderingSystem<'c> {
 
             let rect_x = rbody.position().translation.vector.x;
             let rect_y = rbody.position().translation.vector.y;
-            let rect_w = 50.0;
-            let rect_h = 50.0;
+            let rect_w = 5.0;
+            let rect_h = 5.0;
 
             let x1 = rect_x;
             let x2 = rect_x + rect_w;
             let y1 = rect_y;
             let y2 = rect_y + rect_h;
-            let pts = [
-                graphics::Point2::new(x1, y1),
-                graphics::Point2::new(x2, y1),
-                graphics::Point2::new(x2, y2),
-                graphics::Point2::new(x1, y2),
+            let points = [
+                graphics::Point2::new(x1*10.0, y1*10.0),
+                graphics::Point2::new(x2*10.0, y1*10.0),
+                graphics::Point2::new(x2*10.0, y2*10.0),
+                graphics::Point2::new(x1*10.0, y2*10.0),
             ];
-            let m = graphics::Mesh::new_polygon(
+            let mesh = graphics::Mesh::new_polygon(
                 self.ctx,
                 graphics::DrawMode::Line(1.0),
-                &pts
-            ).unwrap();
-            m.draw(self.ctx, graphics::Point2::origin(), 0.0).unwrap();
+                &points
+            ).expect("Error creating polygon.");
+
+            mesh.draw_ex(
+                self.ctx,
+                DrawParam {
+                    dest: graphics::Point2::origin(),
+                    rotation: 0.0,
+                    ..Default::default()
+                },
+            ).expect("Error drawing entity bounds.");
         });
     }
 }
@@ -134,7 +142,8 @@ impl<'a> System<'a> for PhysicSystem {
             mut physic_world,
         ): Self::SystemData,
     ) {
-        physic_world.set_timestep(1.0 - update_time.0);
+        println!("{}", update_time.0);
+        physic_world.set_timestep(0.1 - update_time.0);
         physic_world.step();
     }
 }
