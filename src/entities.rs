@@ -24,7 +24,8 @@ pub fn create_static(ctx: &mut Context, world: &mut World, font: &Font, x: f32, 
         24.9,
         24.9,
     )));
-    let inertia = shape.inertia(1.0);
+    let mut inertia = shape.inertia(1.0);
+    inertia.angular = 0.0;
     let center_of_mass = shape.center_of_mass();
 
     let body_handle = CustomRigidBody::safe_insert(
@@ -67,7 +68,8 @@ pub fn create_moving(ctx: &mut Context, world: &mut World, font: &Font) {
         24.9,
         24.9,
     )));
-    let inertia = shape.inertia(1.0);
+    let mut inertia = shape.inertia(1.0);
+    inertia.angular = 0.0;
     let center_of_mass = shape.center_of_mass();
 
     let body_handle = CustomRigidBody::safe_insert(
@@ -106,7 +108,8 @@ pub fn create_controled(ctx: &mut Context, world: &mut World, font: &Font) {
         24.9,
         24.9,
     )));
-    let inertia = shape.inertia(1.0);
+    let mut inertia = shape.inertia(1.0);
+    inertia.angular = 0.0;
     let center_of_mass = shape.center_of_mass();
 
     let body_handle = CustomRigidBody::safe_insert(
