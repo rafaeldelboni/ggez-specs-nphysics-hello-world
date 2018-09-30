@@ -13,15 +13,16 @@ mod retained_storage;
 
 use ggez::conf;
 use ggez::event;
+use ggez::event::{Keycode};
 use ggez::graphics;
 use ggez::{Context, GameResult};
 use nphysics2d::math::Vector;
 use specs::{Dispatcher, DispatcherBuilder, World, RunNow};
 
 use retained_storage::Retained;
-use systems::{ControlSystem, RenderingSystem, MoveSystem, PhysicSystem};
-use components::{Controlable, Text, Velocity, CustomRigidBody, Contactor};
-use resources::{BodiesMap, PhysicWorld, UpdateTime};
+use systems::{ControlableSystem, RenderingSystem, MoveSystem, PhysicSystem};
+use components::{Controlable, Collider, Velocity, CustomRigidBody, Contactor};
+use resources::{BodiesMap, InputControls, PhysicWorld, UpdateTime};
 
 struct MainState<'a, 'b> {
     frames: usize,
@@ -34,7 +35,7 @@ impl<'a, 'b> MainState<'a, 'b> {
         graphics::set_default_filter(ctx, graphics::FilterMode::Nearest);
 
         let mut world = World::new();
-        world.register::<Text>();
+        world.register::<Collider>();
         world.register::<Velocity>();
         world.register::<Controlable>();
         world.register::<CustomRigidBody>();
@@ -45,18 +46,19 @@ impl<'a, 'b> MainState<'a, 'b> {
         world.add_resource(physic_world);
         world.add_resource(BodiesMap::new());
         world.add_resource(UpdateTime(0.0));
+        world.add_resource(InputControls::new());
 
         let dispatcher: Dispatcher<'a, 'b> = DispatcherBuilder::new()
+            .with(ControlableSystem, "controlable", &[])
             .with(PhysicSystem, "physic_system", &[])
             .with(MoveSystem, "move_system", &[])
             .build();
 
-        let font = graphics::Font::new(ctx, "/DejaVuSerif.ttf", 48)?;
-
-        entities::create_static(ctx, &mut world, &font, 1.0, 1.0);
-        entities::create_static(ctx, &mut world, &font, 6.0, 1.0);
-        entities::create_moving(ctx, &mut world, &font);
-        entities::create_controled(ctx, &mut world, &font);
+        entities::create_static(ctx, &mut world, 4.0, 4.0);
+        entities::create_static(ctx, &mut world, 9.0, 4.0);
+        entities::create_static(ctx, &mut world, 20.0, 20.0);
+        entities::create_moving(ctx, &mut world);
+        entities::create_controled(ctx, &mut world);
 
         Ok(MainState {
             frames: 0,
@@ -69,10 +71,7 @@ impl<'a, 'b> MainState<'a, 'b> {
 impl<'a, 'b> event::EventHandler for MainState<'a, 'b> {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
         let dt = ggez::timer::get_delta(ctx);
-        let seconds = (
-            dt.as_secs() as f32 + (dt.subsec_nanos() as f32 / 1_000_000_000.0)
-        ).min(1.0 / 20.0);
-
+        let seconds = dt.subsec_nanos() as f32 / 1_000_000_000.0;
         self.world.write_resource::<UpdateTime>().0 = seconds;
 
         self.dispatcher.dispatch(&mut self.world.res);
@@ -120,10 +119,19 @@ impl<'a, 'b> event::EventHandler for MainState<'a, 'b> {
         _context: &mut Context,
         keycode: event::Keycode,
         _keymod: event::Mod,
-        _repeat: bool
+        repeat: bool
     ) {
-        let mut cs = ControlSystem::new(keycode, true);
-        cs.run_now(&mut self.world.res);
+        let mut input = self.world.write_resource::<InputControls>();
+
+        if !repeat {
+            match keycode {
+                Keycode::Left => input.left = true,
+                Keycode::Right => input.right = true,
+                Keycode::Up => input.up = true,
+                Keycode::Down => input.down = true,
+                _ => (),
+            }
+        }
     }
 
     fn key_up_event(
@@ -131,11 +139,18 @@ impl<'a, 'b> event::EventHandler for MainState<'a, 'b> {
         _context: &mut Context,
         keycode: event::Keycode,
         _keymod: event::Mod,
-        _repeat: bool
-
+        repeat: bool
     ) {
-        let mut cs = ControlSystem::new(keycode, false);
-        cs.run_now(&mut self.world.res);
+        let mut input = self.world.write_resource::<InputControls>();
+        if !repeat {
+            match keycode {
+                Keycode::Left => input.left = false,
+                Keycode::Right => input.right = false,
+                Keycode::Up => input.up = false,
+                Keycode::Down => input.down = false,
+                _ => (),
+            }
+        }
     }
 }
 

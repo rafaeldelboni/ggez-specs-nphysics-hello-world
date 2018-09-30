@@ -1,22 +1,27 @@
 use std::ops::{Deref, DerefMut};
 
-use ggez::graphics;
-
 use specs::{Entity, Component, NullStorage, VecStorage, WriteStorage};
 use nphysics2d::math::{Point, Inertia, Isometry};
 use nphysics2d::object::{BodyHandle, BodyStatus, RigidBody};
+use nalgebra::{Vector2};
 
 use resources::{PhysicWorld, BodiesMap};
 use retained_storage::{RetainedStorage};
 
-#[derive(Debug)]
-pub struct Text {
-    pub value: graphics::Text,
-    pub position: graphics::Point2,
+#[derive(Clone, Debug)]
+pub struct Collider {
+    pub half_size: Vector2<f32>,
 }
 
-impl Component for Text {
+impl Component for Collider {
     type Storage = VecStorage<Self>;
+}
+impl Collider {
+    pub fn new(full_size: Vector2<f32>) -> Collider {
+        Collider {
+            half_size: full_size / 2.0
+        }
+    }
 }
 
 #[derive(Debug)]

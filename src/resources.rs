@@ -8,6 +8,34 @@ use nphysics2d::object::{BodyHandle};
 #[derive(Debug, Default)]
 pub struct UpdateTime(pub f32);
 
+#[derive(Clone)]
+pub struct InputControls {
+    pub up: bool,
+    pub down: bool,
+    pub left: bool,
+    pub right: bool,
+}
+impl InputControls {
+    pub fn new() -> InputControls {
+        InputControls {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+        }
+    }
+}
+impl Default for InputControls {
+    fn default() -> InputControls {
+        InputControls {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+        }
+    }
+}
+
 pub type PhysicWorld = World<f32>;
 
 #[derive(Debug, Default)]
