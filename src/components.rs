@@ -134,7 +134,6 @@ impl EcsRigidBody {
     }
 
     #[inline]
-    #[allow(unused)]
     pub fn get<'a>(
         &'a self,
         physic_world: &'a PhysicWorld,
