@@ -21,7 +21,7 @@ use specs::{Dispatcher, DispatcherBuilder, World, RunNow};
 
 use retained_storage::Retained;
 use systems::{ControlableSystem, RenderingSystem, MoveSystem, PhysicSystem};
-use components::{Controlable, Collider, Velocity, CustomRigidBody, Contactor};
+use components::{Controlable, ShapeCuboid, ShapeTriangle, Velocity, EcsRigidBody, Contactor};
 use resources::{BodiesMap, InputControls, PhysicWorld, UpdateTime};
 
 struct MainState<'a, 'b> {
@@ -35,10 +35,11 @@ impl<'a, 'b> MainState<'a, 'b> {
         graphics::set_default_filter(ctx, graphics::FilterMode::Nearest);
 
         let mut world = World::new();
-        world.register::<Collider>();
+        world.register::<ShapeCuboid>();
+        world.register::<ShapeTriangle>();
         world.register::<Velocity>();
         world.register::<Controlable>();
-        world.register::<CustomRigidBody>();
+        world.register::<EcsRigidBody>();
         world.register::<Contactor>();
 
         let mut physic_world = PhysicWorld::new();
@@ -55,8 +56,7 @@ impl<'a, 'b> MainState<'a, 'b> {
             .build();
 
         entities::create_static(ctx, &mut world, 4.0, 4.0);
-        entities::create_static(ctx, &mut world, 9.0, 4.0);
-        entities::create_static(ctx, &mut world, 20.0, 20.0);
+        entities::create_static_tri(ctx, &mut world, 20.0, 20.0);
         entities::create_moving(ctx, &mut world);
         entities::create_controled(ctx, &mut world);
 
@@ -81,7 +81,7 @@ impl<'a, 'b> event::EventHandler for MainState<'a, 'b> {
         let mut bodies_map = self.world.write_resource::<BodiesMap>();
 
         let retained = self.world
-            .write_storage::<CustomRigidBody>()
+            .write_storage::<EcsRigidBody>()
             .retained()
             .iter()
             .map(|r| r.handle())

@@ -6,7 +6,7 @@ use nphysics2d::algebra::{Velocity2};
 use specs::{System, WriteStorage, ReadStorage, Read, Write, Join};
 
 use resources::{InputControls, UpdateTime, PhysicWorld};
-use components::{Collider, Velocity, Controlable, CustomRigidBody as Body};
+use components::{ShapeCuboid, ShapeTriangle, Velocity, Controlable, EcsRigidBody as Body};
 
 pub struct MoveSystem;
 
@@ -44,18 +44,19 @@ impl<'c> RenderingSystem<'c> {
 impl<'a, 'c> System<'a> for RenderingSystem<'c> {
     type SystemData = (
         ReadStorage<'a, Body>,
-        ReadStorage<'a, Collider>,
+        ReadStorage<'a, ShapeCuboid>,
+        ReadStorage<'a, ShapeTriangle>,
         Read<'a, PhysicWorld>,
     );
 
-    fn run(&mut self, (bodies, collider, world): Self::SystemData) {
-        (&bodies, &collider).join().for_each(|(body, collider)| {
+    fn run(&mut self, (bodies, cube, triangle, world): Self::SystemData) {
+        (&bodies, &cube).join().for_each(|(body, cube)| {
             let rbody = body.get(&world);
 
             let rect_x = rbody.position().translation.vector.x;
             let rect_y = rbody.position().translation.vector.y;
-            let rect_w = collider.half_size.x;
-            let rect_h = collider.half_size.y;
+            let rect_w = cube.0.half_extents().x;
+            let rect_h = cube.0.half_extents().y;
 
             let x1 = rect_x - rect_w;
             let x2 = rect_x + rect_w;
@@ -66,6 +67,42 @@ impl<'a, 'c> System<'a> for RenderingSystem<'c> {
                 graphics::Point2::new(x2, y1),
                 graphics::Point2::new(x2, y2),
                 graphics::Point2::new(x1, y2),
+            ];
+            let mesh = graphics::Mesh::new_polygon(
+                self.ctx,
+                graphics::DrawMode::Line(0.1),
+                &points
+            ).expect("Error creating polygon.");
+
+            mesh.draw_ex(
+                self.ctx,
+                DrawParam {
+                    dest: graphics::Point2::origin(),
+                    rotation: 0.0,
+                    scale: graphics::Point2::new(10., 10.),
+                    offset: graphics::Point2::new(0.5, 0.5),
+                    ..Default::default()
+                },
+            ).expect("Error drawing entity bounds.");
+        });
+
+        (&bodies, &triangle).join().for_each(|(body, triangle)| {
+            let rbody = body.get(&world);
+
+            let rect_x = rbody.position().translation.vector.x;
+            let rect_y = rbody.position().translation.vector.y;
+            let points = triangle.0.points();
+
+            let x1 = rect_x + points[0].x;
+            let x2 = rect_x + points[1].x;
+            let x3 = rect_x + points[2].x;
+            let y1 = rect_y + points[0].y;
+            let y2 = rect_y + points[1].y;
+            let y3 = rect_y + points[2].y;
+            let points = [
+                graphics::Point2::new(x1, y1),
+                graphics::Point2::new(x2, y2),
+                graphics::Point2::new(x3, y3),
             ];
             let mesh = graphics::Mesh::new_polygon(
                 self.ctx,
