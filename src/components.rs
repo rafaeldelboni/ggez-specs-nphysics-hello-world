@@ -1,6 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
 use specs::{Entity, Component, NullStorage, VecStorage, WriteStorage, World};
+
 use nphysics2d::math::{Point, Inertia, Isometry};
 use nphysics2d::object::{BodyHandle, BodyStatus, Material, RigidBody};
 use nphysics2d::volumetric::Volumetric;

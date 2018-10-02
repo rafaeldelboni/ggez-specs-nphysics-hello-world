@@ -1,6 +1,6 @@
 use ggez::graphics;
 use ggez::graphics::{DrawParam, Drawable};
-use ggez::{Context};
+use ggez::{Context, GameResult};
 
 use nphysics2d::algebra::{Velocity2};
 use specs::{System, WriteStorage, ReadStorage, Read, Write, Join};
@@ -39,6 +39,25 @@ impl<'c> RenderingSystem<'c> {
     pub fn new(ctx: &'c mut Context) -> RenderingSystem<'c> {
         RenderingSystem { ctx }
     }
+
+    pub fn render(&mut self, points: &[graphics::Point2]) -> GameResult<()> {
+        let mesh = graphics::Mesh::new_polygon(
+            self.ctx,
+            graphics::DrawMode::Line(0.1),
+            points
+        ).expect("Error creating polygon.");
+
+        mesh.draw_ex(
+            self.ctx,
+            DrawParam {
+                dest: graphics::Point2::origin(),
+                rotation: 0.0,
+                scale: graphics::Point2::new(10., 10.),
+                offset: graphics::Point2::new(0.5, 0.5),
+                ..Default::default()
+            },
+        )
+    }
 }
 
 impl<'a, 'c> System<'a> for RenderingSystem<'c> {
@@ -68,22 +87,8 @@ impl<'a, 'c> System<'a> for RenderingSystem<'c> {
                 graphics::Point2::new(x2, y2),
                 graphics::Point2::new(x1, y2),
             ];
-            let mesh = graphics::Mesh::new_polygon(
-                self.ctx,
-                graphics::DrawMode::Line(0.1),
-                &points
-            ).expect("Error creating polygon.");
 
-            mesh.draw_ex(
-                self.ctx,
-                DrawParam {
-                    dest: graphics::Point2::origin(),
-                    rotation: 0.0,
-                    scale: graphics::Point2::new(10., 10.),
-                    offset: graphics::Point2::new(0.5, 0.5),
-                    ..Default::default()
-                },
-            ).expect("Error drawing entity bounds.");
+            self.render(&points).expect("Error drawing cube bounds.")
         });
 
         (&bodies, &triangle).join().for_each(|(body, triangle)| {
@@ -104,22 +109,8 @@ impl<'a, 'c> System<'a> for RenderingSystem<'c> {
                 graphics::Point2::new(x2, y2),
                 graphics::Point2::new(x3, y3),
             ];
-            let mesh = graphics::Mesh::new_polygon(
-                self.ctx,
-                graphics::DrawMode::Line(0.1),
-                &points
-            ).expect("Error creating polygon.");
 
-            mesh.draw_ex(
-                self.ctx,
-                DrawParam {
-                    dest: graphics::Point2::origin(),
-                    rotation: 0.0,
-                    scale: graphics::Point2::new(10., 10.),
-                    offset: graphics::Point2::new(0.5, 0.5),
-                    ..Default::default()
-                },
-            ).expect("Error drawing entity bounds.");
+            self.render(&points).expect("Error drawing triangle bounds.")
         });
     }
 }
