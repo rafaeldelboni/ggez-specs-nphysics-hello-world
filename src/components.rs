@@ -1,5 +1,3 @@
-use std::ops::{Deref, DerefMut};
-
 use specs::{Entity, Component, NullStorage, VecStorage, WriteStorage, World};
 
 use nphysics2d::math::{Point, Inertia, Isometry};
@@ -151,23 +149,5 @@ impl EcsRigidBody {
         physic_world
             .rigid_body_mut(self.0)
             .expect("Rigid body in specs does not exist in physic world")
-    }
-}
-
-#[derive(Debug)]
-pub struct Contactor(pub Vec<Entity>);
-
-impl Component for Contactor {
-    type Storage = VecStorage<Self>;
-}
-impl Deref for Contactor {
-    type Target = Vec<Entity>;
-    fn deref(&self) -> &Vec<Entity> {
-        &self.0
-    }
-}
-impl DerefMut for Contactor {
-    fn deref_mut(&mut self) -> &mut Vec<Entity> {
-        &mut self.0
     }
 }

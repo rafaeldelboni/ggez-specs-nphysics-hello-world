@@ -21,7 +21,7 @@ use specs::{Dispatcher, DispatcherBuilder, World, RunNow};
 
 use retained_storage::Retained;
 use systems::{ControlableSystem, RenderingSystem, MoveSystem, PhysicSystem};
-use components::{Controlable, ShapeCuboid, ShapeTriangle, Velocity, EcsRigidBody, Contactor};
+use components::{Controlable, ShapeCuboid, ShapeTriangle, Velocity, EcsRigidBody};
 use resources::{BodiesMap, InputControls, PhysicWorld, UpdateTime};
 
 struct MainState<'a, 'b> {
@@ -40,7 +40,6 @@ impl<'a, 'b> MainState<'a, 'b> {
         world.register::<Velocity>();
         world.register::<Controlable>();
         world.register::<EcsRigidBody>();
-        world.register::<Contactor>();
 
         let mut physic_world = PhysicWorld::new();
         physic_world.set_gravity(Vector::new(0.0, 0.0));
